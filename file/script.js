@@ -1,72 +1,50 @@
-const screens = {
-    s1: document.getElementById("screen1"),
-    s2: document.getElementById("screen2"),
-    s3: document.getElementById("screen3"),
-};
+let level = 0;
 
-const sub = document.getElementById("sub");
-const typed = document.getElementById("typed");
-const btn = document.getElementById("btn");
-const hearts = document.getElementById("hearts");
+const messages = [
+  "Nyugodt reggel.",
+  "Ne siess ma semmivel.",
+  "Minden rendben lesz.",
+  "Csak egy gondolat vagyok melletted.",
+  "Nem kell tökéletesnek lenned.",
+];
 
-const text =
-"Nem kell sok.\n\nCsak annyi, hogy tudd:\nfontos vagy nekem.\n\nÉs ma is gondoltam rád. ❤️";
-
-setTimeout(() => {
-    sub.innerText = "valaki hagyott neked egy üzenetet...";
-}, 1200);
-
-setTimeout(() => {
-    switchScreen("s2");
-    type();
-}, 3500);
-
-function switchScreen(id) {
-    document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
-    document.getElementById(id).classList.add("active");
+function spawnRose(intensity){
+  for(let i = 0; i < intensity; i++){
+    const r = document.createElement("div");
+    r.innerHTML = "🌹";
+    r.style.position = "absolute";
+    r.style.left = Math.random() * 100 + "vw";
+    r.style.top = "-20px";
+    r.style.animation = "fall 4s linear";
+    document.body.appendChild(r);
+    setTimeout(() => r.remove(), 4000);
+  }
 }
 
-/* gépelés */
-let i = 0;
+// animáció
+const style = document.createElement("style");
+style.innerHTML = `
+@keyframes fall {
+  to { transform: translateY(110vh); }
+}`;
+document.head.appendChild(style);
 
-function type() {
-    const interval = setInterval(() => {
-        typed.innerText += text[i];
-        i++;
+document.getElementById("btn").onclick = () => {
+  level++;
 
-        if (i >= text.length) {
-            clearInterval(interval);
-            setTimeout(() => switchScreen("s3"), 1200);
-        }
-    }, 45);
-}
+  // 100 szint
+  if(level > 100){
+    document.getElementById("message").innerText = "Kész 🌹";
+    document.getElementById("btn").style.display = "none";
+    return;
+  }
 
-/* szívek */
-setInterval(() => {
-    const h = document.createElement("div");
-    h.classList.add("heart");
-    h.innerText = "❤️";
+  document.getElementById("message").innerText =
+    messages[level % messages.length] + "\nLevel: " + level;
 
-    h.style.left = Math.random() * 100 + "vw";
-    h.style.fontSize = (14 + Math.random() * 20) + "px";
+  // nehézség / intenzitás nő
+  spawnRose(Math.min(level, 30));
 
-    hearts.appendChild(h);
-
-    setTimeout(() => h.remove(), 6000);
-}, 300);
-
-/* gomb */
-btn.onclick = () => {
-    for (let i = 0; i < 25; i++) {
-        const h = document.createElement("div");
-        h.classList.add("heart");
-        h.innerText = "💖";
-
-        h.style.left = Math.random() * 100 + "vw";
-        h.style.fontSize = "22px";
-
-        hearts.appendChild(h);
-
-        setTimeout(() => h.remove(), 3000);
-    }
+  document.querySelector(".bg").style.filter =
+    `hue-rotate(${level * 3}deg)`;
 };
