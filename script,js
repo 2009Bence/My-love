@@ -1,72 +1,55 @@
-const screens = {
-    s1: document.getElementById("screen1"),
-    s2: document.getElementById("screen2"),
-    s3: document.getElementById("screen3"),
-};
+document.addEventListener("DOMContentLoaded", () => {
+    // 1. Írógép effektus a főcímhez
+    const text = "Jó reggelt, Szerelmem! ❤️";
+    const animatedText = document.getElementById("animatedText");
+    let index = 0;
 
-const sub = document.getElementById("sub");
-const typed = document.getElementById("typed");
-const btn = document.getElementById("btn");
-const hearts = document.getElementById("hearts");
-
-const text =
-"Nem kell sok.\n\nCsak annyi, hogy tudd:\nfontos vagy nekem.\n\nÉs ma is gondoltam rád. ❤️";
-
-setTimeout(() => {
-    sub.innerText = "valaki hagyott neked egy üzenetet...";
-}, 1200);
-
-setTimeout(() => {
-    switchScreen("s2");
-    type();
-}, 3500);
-
-function switchScreen(id) {
-    document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
-    document.getElementById(id).classList.add("active");
-}
-
-/* gépelés */
-let i = 0;
-
-function type() {
-    const interval = setInterval(() => {
-        typed.innerText += text[i];
-        i++;
-
-        if (i >= text.length) {
-            clearInterval(interval);
-            setTimeout(() => switchScreen("s3"), 1200);
+    function typeWriter() {
+        if (index < text.length) {
+            animatedText.innerHTML += text.charAt(index);
+            index++;
+            setTimeout(typeWriter, 120); // Betűk közötti sebesség (ms)
         }
-    }, 45);
-}
-
-/* szívek */
-setInterval(() => {
-    const h = document.createElement("div");
-    h.classList.add("heart");
-    h.innerText = "❤️";
-
-    h.style.left = Math.random() * 100 + "vw";
-    h.style.fontSize = (14 + Math.random() * 20) + "px";
-
-    hearts.appendChild(h);
-
-    setTimeout(() => h.remove(), 6000);
-}, 300);
-
-/* gomb */
-btn.onclick = () => {
-    for (let i = 0; i < 25; i++) {
-        const h = document.createElement("div");
-        h.classList.add("heart");
-        h.innerText = "💖";
-
-        h.style.left = Math.random() * 100 + "vw";
-        h.style.fontSize = "22px";
-
-        hearts.appendChild(h);
-
-        setTimeout(() => h.remove(), 3000);
     }
-};
+
+    // Kis késleltetéssel indítjuk a gépelést, amíg a nap emelkedni kezd
+    setTimeout(typeWriter, 1500);
+
+    // 2. Folyamatosan repülő rózsák generálása
+    const container = document.getElementById("roseContainer");
+    const symbols = ['🌹', '🌸', '🌷'];
+
+    function createPetal() {
+        const petal = document.createElement("div");
+        petal.classList.add("petal");
+        
+        // Véletlenszerű virág kiválasztása
+        petal.innerText = symbols[Math.floor(Math.random() * symbols.length)];
+        
+        // Véletlenszerű kezdőpozíció (vízszintesen a képernyő alján)
+        petal.style.left = Math.random() * 100 + "vw";
+        
+        // Véletlenszerű méret
+        const size = Math.random() * 20 + 20; // 20px és 40px között
+        petal.style.fontSize = `${size}px`;
+        
+        // Véletlenszerű sebesség és késleltetés az organikus hatásért
+        const duration = Math.random() * 5 + 6; // 6-11 másodperc között repülnek fel
+        petal.style.animationDuration = `${duration}s`;
+        
+        container.appendChild(petal);
+
+        // Miután kifutott a képernyőből, töröljük, hogy ne terhelje a memóriát
+        setTimeout(() => {
+            petal.remove();
+        }, duration * 1000);
+    }
+
+    // Első adag szirmok azonnali indítása
+    for(let i = 0; i < 15; i++) {
+        setTimeout(createPetal, Math.random() * 3000);
+    }
+
+    // Folyamatos utánpótlás időközönként
+    setInterval(createPetal, 600);
+});
